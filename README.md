@@ -1,4 +1,4 @@
-# Chrome Extension For Parameterized Bookmarks => Smarks
+# Chrome Extension For Parameterized Bookmarks (Smarks)
 
 Smarks (Smart Bookmarks) is chrome extension built using the TypeScript and Visual Studio Code. The starter code is taken from https://github.com/chibat/chrome-extension-typescript-starter
 
@@ -12,7 +12,7 @@ The above 2 use cases required the bookmarks to support parameters and parameter
 ### Example 1
 
 #### Url:
- ___{{CurrentTabOrigin}}___/qa/cdp/mintedjwt.jsp?issuerId=___{{OrgId}}___&audienceId=___{{TenantId}}___&type={{TokenType}}
+ ___{{CurrentTabOrigin}}___/qa/cdp/mintedjwt.jsp?issuerId=___{{OrgId}}___&audienceId=___{{TenantId}}___&type=___{{TokenType}}___
 
 #### Parameter Definitions
 
@@ -55,7 +55,7 @@ The above 2 use cases required the bookmarks to support parameters and parameter
     1. Same as Bookmarks.
 
 ## Contact Info to report issues
-You can reach me smarttoolsprod@gmail.com. Feel free to fork the code and make it better.
+You can reach me smarttoolsprod@gmail.com. Feel free to fork the code and make it better!
 
 ## Build and setup
 
