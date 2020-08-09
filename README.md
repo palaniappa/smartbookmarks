@@ -39,22 +39,25 @@ The above 2 use cases required the bookmarks to support parameters and parameter
 - Adding a bookmark
     
     1. Click on the Upsert Bookmark
-    1. Enter the name & url, enclose the parameters with {{}}
-    1. Click upsert.
+    2. Enter the name & url, enclose the parameters with {{}}
+    3. Click upsert.
 - Editing a bookmark
     
     1. Double click on any of bookmark link.
-    1. Click on the Upsert Bookmark to show the name and url text boxes.
-    1. Make changes as necessary.
-    1. Click upsert. 
+    2. Click on the Upsert Bookmark to show the name and url text boxes.
+    3. Make changes as necessary.
+    4. Click upsert. 
 - Deleting a bookmark
     
     1. Click on the x button next to the link to delete it.
 - Adding/Editing/Deleting Parameter
     
     1. Same as Bookmarks.
+- Export / Import
+    1. Click on the export button and this will download all the bookmarks and parameters as a JSON file.
+    2. You can use the Import button and select the previously exported json to create the bookmarks and parameters in your new chrome profile or different machine.
 
-## Contact Info to report issues
+## Contact Info
 You can reach me smarttoolsprod@gmail.com. Feel free to fork the code and make it better!
 
 ## Build and setup
