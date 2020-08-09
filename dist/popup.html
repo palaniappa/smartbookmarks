@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Smart Bookmark</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="js/vendor.js"></script>
+</head>
+
+<body>
+  <div id="mainContainer">
+    <h3>Smarks</h3>
+    <div id="bookmarkList"></div>
+
+    <br />
+    <button class="collapsible">Upsert Bookmark</button>
+    <div class="content">
+      <table>
+        <tr>
+          <td><input class="allInputs" id="bmName" placeholder="Name" /></td>
+        </tr>
+        <tr>
+          <td><input class="allInputs" id="bmUrl" placeholder="Url" /></td>
+        </tr>
+        <tr>
+          <td><button id="bmAdd">Upsert</button></td>
+        </tr>
+      </table>
+    </div>
+    <button class="collapsible">Parameters</button>
+    <div class="content">
+      <div id="globalParameterList"></div>
+      <div id="newItem">
+        <table>
+          <tr>
+            <td><input class="allInputs" id="pmKey" placeholder="Key" /></td>
+          </tr>
+          <tr>
+            <td><input class="allInputs" id="pmValue" placeholder="Literal / $ActiveTab:prop / $Js:exp"
+                tooltip="www.google.com/search?q={{$Literal:News Today}}" /></td>
+          </tr>
+          <tr>
+            <td><button id="pmAdd">Upsert</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+    <table>
+      <tr>
+        <td><a id="downloadlink"><button id="export" class="btnExportImport"><i class="fa fa-download"></i> Export</button></a></td>
+        <td>
+          <label for="importFile" class="btnExportImport"><i class="fa fa-upload"></i> Import</label>
+          <input id="importFile" type="file" accept="application/json" style="display:none"/></td>
+      </tr>
+    </table>
+  <script src="js/popup.js"></script>
+</body>
+
+</html>
