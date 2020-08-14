@@ -46,7 +46,7 @@ export class PopupController {
             let bookmarks: Bookmarks = result[0];
             let parameters: Parameters = result[1];
             let currentTab: chrome.tabs.Tab = result[2];
-            this.renderExportLink(bookmarks,parameters);
+            this.renderExportLink(bookmarks, parameters);
             let bookmarkListContainer = document.getElementById("bookmarkList");
             if (bookmarkListContainer) {
                 let bmList = document.createElement("ul");
@@ -62,7 +62,7 @@ export class PopupController {
                     bookmarkListContainer.appendChild(bmList);
                 });
 
-                
+
             }
         });
     }
@@ -71,12 +71,17 @@ export class PopupController {
         $("#bmName").val('');
         $("#bmUrl").val('');
         this.bookmarkEditId = null;
-        $('#bmAdd').off('click').on('click',() => {
+        $('#bmAdd').off('click').on('click', () => {
             let bmName = $("#bmName").val() as string;
             let bmUrl = $("#bmUrl").val() as string;
-            this.addBookmarkItem(this.bookmarkEditId,bmName, bmUrl).then(() => {
+            this.addBookmarkItem(this.bookmarkEditId, bmName, bmUrl).then(() => {
                 this.render();
             });
+        });
+        $('#bmClear').off('click').on('click', () => {
+            $("#bmName").val('');
+            $("#bmUrl").val('');
+            this.bookmarkEditId = null;
         });
     }
 
@@ -103,6 +108,9 @@ export class PopupController {
                 this.bookmarkEditId = bookmarkId;
                 $("#bmName").val(bookmark.name);
                 $("#bmUrl").val(bookmark.url);
+                $("#upsertBookmark").removeClass("collapsible");
+                $("#upsertBookmark").addClass("collapsible active");
+                $("#upsertBookmark").click();
             }
         });
     }
@@ -117,8 +125,8 @@ export class PopupController {
                 let ids: Array<string> = [];
                 parametersObject.items.forEach(p => {
                     if (p) {
-                        let closeButton = HtmlUtil.getCloseButton(p.id,this.deleteParameter.bind(this));
-                        let paramItem = [p.key, p.value,closeButton];
+                        let closeButton = HtmlUtil.getCloseButton(p.id, this.deleteParameter.bind(this));
+                        let paramItem = [p.key, p.value, closeButton];
                         ids.push(p.id);
                         items.push(paramItem);
                     }
@@ -127,7 +135,7 @@ export class PopupController {
                 hearders.push("Key");
                 hearders.push("Value");
                 hearders.push("x");
-                let table = HtmlUtil.createTable(items, hearders,ids,this.editParameter.bind(this));
+                let table = HtmlUtil.createTable(items, hearders, ids, this.editParameter.bind(this));
                 globalParameterListContainer.innerHTML = '';
                 globalParameterListContainer.appendChild(table);
             });
@@ -139,16 +147,21 @@ export class PopupController {
         $("#pmKey").val("");
         $("#pmValue").val("");
         this.parameterEditId = null;
-        $('#pmAdd').off('click').on('click',() => {
+        $('#pmAdd').off('click').on('click', () => {
             let pmKey = $("#pmKey").val() as string;
             let pmValue = $("#pmValue").val() as string;
-            this.addParameter(this.parameterEditId,pmKey, pmValue).then(() => {
+            this.addParameter(this.parameterEditId, pmKey, pmValue).then(() => {
                 this.render();
             });
         });
+        $('#pmClear').off('click').on('click', () => {
+            $("#pmKey").val("");
+            $("#pmValue").val("");
+            this.parameterEditId = null;
+        });
     }
 
-    private addParameter(id: string,key: string, value: string): Promise<void> {
+    private addParameter(id: string, key: string, value: string): Promise<void> {
         if (key && value) {
             if (id == null || id == '') {
                 id = Util.getUniqueId(PARAMETER_ID_PREFIX);
@@ -166,7 +179,7 @@ export class PopupController {
     }
 
     public editParameter(parameterId: string): void {
-        Store.instance.getParameter (parameterId).then((parameter) => {
+        Store.instance.getParameter(parameterId).then((parameter) => {
             if (parameter) {
                 this.parameterEditId = parameter.id;
                 $("#pmKey").val(parameter.key);
@@ -175,22 +188,22 @@ export class PopupController {
         });
     }
 
-    public renderExportLink(bookmarks: Bookmarks, parameters: Parameters){
-        
+    public renderExportLink(bookmarks: Bookmarks, parameters: Parameters) {
+
         let link = document.getElementById("downloadlink");
-        if(link){
-            let datamodel: DataModel = { version: Store.instance.DataModelVersion, bookmarks:[], parameters:[]};
-            bookmarks.items.forEach( b => {
+        if (link) {
+            let datamodel: DataModel = { version: Store.instance.DataModelVersion, bookmarks: [], parameters: [] };
+            bookmarks.items.forEach(b => {
                 datamodel.bookmarks.push(b);
             });
-            parameters.items.forEach( p=>{
+            parameters.items.forEach(p => {
                 datamodel.parameters.push(p);
             });
 
             let dataToExport = JSON.stringify(datamodel);
             let encodedExportData = "text/json;charset=utf-8," + encodeURIComponent(dataToExport);
-            link.setAttribute("href","data:"+encodedExportData);
-            link.setAttribute("download","SmartBookmarks.json");
+            link.setAttribute("href", "data:" + encodedExportData);
+            link.setAttribute("download", "SmartBookmarks.json");
         }
     }
 
@@ -220,16 +233,16 @@ export class PopupController {
         }
     }
 
-    public importData(dataModel: DataModel): void{
-        if(dataModel){
+    public importData(dataModel: DataModel): void {
+        if (dataModel) {
             let promises = [];
-            if(dataModel.bookmarks){
+            if (dataModel.bookmarks) {
                 promises.push(Store.instance.addBookmarks(dataModel.bookmarks));
             }
-            if(dataModel.parameters){
+            if (dataModel.parameters) {
                 promises.push(Store.instance.addParameters(dataModel.parameters));
             }
-            Promise.all(promises).then( () => {
+            Promise.all(promises).then(() => {
                 this.render();
             });
         }

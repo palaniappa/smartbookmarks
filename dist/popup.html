@@ -15,7 +15,7 @@
     <div id="bookmarkList"></div>
 
     <br />
-    <button class="collapsible">Upsert Bookmark</button>
+    <button id="upsertBookmark" class="collapsible">Upsert Bookmark</button>
     <div class="content">
       <table>
         <tr>
@@ -25,7 +25,7 @@
           <td><input class="allInputs" id="bmUrl" placeholder="Url" /></td>
         </tr>
         <tr>
-          <td><button id="bmAdd">Upsert</button></td>
+          <td><button id="bmAdd">Upsert</button>  <button id="bmClear">Clear</button></td>
         </tr>
       </table>
     </div>
@@ -42,7 +42,7 @@
                 tooltip="www.google.com/search?q={{$Literal:News Today}}" /></td>
           </tr>
           <tr>
-            <td><button id="pmAdd">Upsert</button></td>
+            <td><button id="pmAdd">Upsert</button>  <button id="pmClear">Clear</button></td>
           </tr>
         </table>
       </div>
