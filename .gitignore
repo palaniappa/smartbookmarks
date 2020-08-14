@@ -19,6 +19,7 @@
 /init.log
 /Logs/**/*
 *.nlp
+/dist/*
 
 **/*node_modules/*
 *node_modules/*
