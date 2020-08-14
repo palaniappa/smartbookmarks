@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Smart Bookmark",
   "description": "Parameterized bookmarks",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
