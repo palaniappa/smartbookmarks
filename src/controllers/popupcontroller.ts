@@ -7,8 +7,20 @@ import { Util } from "../utils/util";
 import { DataModel } from "../model/datamodel";
 
 import * as $ from 'jquery';
-
 export class PopupController {
+
+    public CATEGORY_TYPE_USER = "user";
+    public CATEGORY_TYPE_SYSTEM = "system";
+    public EVENT_ACTION_RENDER = "render";
+    public EVENT_ACTION_ADD_BM = "add_bookmark";
+    public EVENT_ACTION_DELETE_BM = "delete_bookmark";
+    public EVENT_ACTION_EDIT_BM = "edit_bookmark";
+    public EVENT_ACTION_CLEAR_BM = "clear_bookmark";
+    public EVENT_ACTION_ADD_PM = "add_parameter";
+    public EVENT_ACTION_DELETE_PM = "delete_parameter";
+    public EVENT_ACTION_EDIT_PM = "edit_parameter";
+    public EVENT_ACTION_CLEAR_PM = "clear_parameter";
+    public EVENT_ACTION_IMPORT = "import";
 
     public static instance: PopupController = new PopupController();
     public bookmarkEditId: string = null;
@@ -22,6 +34,7 @@ export class PopupController {
         this.renderParameterAddControls();
         this.renderImportControls();
         return p.then(() => {
+            ga("send","event",this.CATEGORY_TYPE_SYSTEM,this.EVENT_ACTION_RENDER);
             console.log("rendering complete!");
         });
     }
@@ -78,14 +91,16 @@ export class PopupController {
                 this.render();
             });
         });
-        $('#bmClear').off('click').on('click', () => {
+        $('#bmClear').off('click').on('click', (e) => {
             $("#bmName").val('');
             $("#bmUrl").val('');
             this.bookmarkEditId = null;
+            ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_CLEAR_BM);
         });
     }
 
     private addBookmarkItem(id: string, name: string, url: string): Promise<void> {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_ADD_BM);
         if (name && url) {
             if (id == null || id == '') {
                 id = Util.getUniqueId(BOOKMARK_ID_PREFIX);
@@ -97,12 +112,14 @@ export class PopupController {
     }
 
     public deleteBookmark(bookmarkId: string): void {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_DELETE_BM);
         Store.instance.deleteBookmark(bookmarkId).then(() => {
             this.render();
         });
     }
 
     public editBookmark(bookmarkId: string): void {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EDIT_BM);
         Store.instance.getBookmark(bookmarkId).then((bookmark) => {
             if (bookmark) {
                 this.bookmarkEditId = bookmarkId;
@@ -162,6 +179,7 @@ export class PopupController {
     }
 
     private addParameter(id: string, key: string, value: string): Promise<void> {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_ADD_PM);
         if (key && value) {
             if (id == null || id == '') {
                 id = Util.getUniqueId(PARAMETER_ID_PREFIX);
@@ -173,12 +191,14 @@ export class PopupController {
     }
 
     public deleteParameter(parameterId: string): void {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_DELETE_PM);
         Store.instance.deleteParameter(parameterId).then(() => {
             this.render();
         });
     }
 
     public editParameter(parameterId: string): void {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EDIT_PM);
         Store.instance.getParameter(parameterId).then((parameter) => {
             if (parameter) {
                 this.parameterEditId = parameter.id;
@@ -189,7 +209,6 @@ export class PopupController {
     }
 
     public renderExportLink(bookmarks: Bookmarks, parameters: Parameters) {
-
         let link = document.getElementById("downloadlink");
         if (link) {
             let datamodel: DataModel = { version: Store.instance.DataModelVersion, bookmarks: [], parameters: [] };
@@ -213,6 +232,7 @@ export class PopupController {
 
     public onImport(event: any) {
         try {
+            ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_IMPORT);
             let files = event.target.files;
             if (!files.length) {
                 alert('No file selected!');
