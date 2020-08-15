@@ -48,12 +48,15 @@ export class HtmlUtil {
         return table;
     }
 
-    public static getListItemWithClose(childElemet: HTMLElement, itemId: string, deleteHandler: (bookmarkId:string) => void, editHandler: (bookmarkId:string) => void): HTMLElement {
+    public static getListItemWithClose(childElemet: HTMLElement, itemId: string, openHandler: (bookmarkId: string) => void, deleteHandler: (bookmarkId:string) => void, editHandler: (bookmarkId:string) => void): HTMLElement {
         let newLi = document.createElement("li");
         newLi.className = "bmUListItem";
         newLi.appendChild(childElemet);
         let closeButton = HtmlUtil.getCloseButton(itemId, deleteHandler);
         newLi.appendChild(closeButton);
+        newLi.onclick = () =>{
+            openHandler(itemId);
+        };
         newLi.ondblclick = ()=> {
             editHandler(itemId);
         }
@@ -76,9 +79,9 @@ export class HtmlUtil {
           return closeButton;
     }
 
-    public static getBookmarkDisplay(bm: Bookmark, resolvedUrl: string, deleteHandler: (bookmarkId:string) => void, editHandler: (bookmarkId:string) => void): HTMLElement {
+    public static getBookmarkDisplay(bm: Bookmark, resolvedUrl: string, openHandler: (bookmarkId:string) => void, deleteHandler: (bookmarkId:string) => void, editHandler: (bookmarkId:string) => void): HTMLElement {
         let anchorElement = HtmlUtil.getAnchorElement(bm.name, resolvedUrl);
-        return HtmlUtil.getListItemWithClose(anchorElement,bm.id, deleteHandler, editHandler);
+        return HtmlUtil.getListItemWithClose(anchorElement,bm.id, openHandler, deleteHandler, editHandler);
     }
 
     public static getAnchorElement(name: string, resolvedUrl: string): HTMLElement {

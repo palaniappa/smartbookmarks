@@ -21,6 +21,8 @@ export class PopupController {
     public EVENT_ACTION_EDIT_PM = "edit_parameter";
     public EVENT_ACTION_CLEAR_PM = "clear_parameter";
     public EVENT_ACTION_IMPORT = "import";
+    public EVENT_ACTION_EXPORT = "export";
+    public EVENT_ACTION_LINK_OPENED = "linkopened";
 
     public static instance: PopupController = new PopupController();
     public bookmarkEditId: string = null;
@@ -68,7 +70,7 @@ export class PopupController {
                     bookmarks.items.forEach(bookmark => {
                         let url = bookmark.url;
                         let resolvedUrl = ParameterUtil.getResolvedUrl(url, parameters, parameterValues);
-                        let bmUi = HtmlUtil.getBookmarkDisplay(bookmark, resolvedUrl, this.deleteBookmark.bind(this), this.editBookmark.bind(this));
+                        let bmUi = HtmlUtil.getBookmarkDisplay(bookmark, resolvedUrl, this.openBookmark.bind(this), this.deleteBookmark.bind(this), this.editBookmark.bind(this));
                         bmList.appendChild(bmUi);
                     });
                     bookmarkListContainer.innerHTML = '';
@@ -109,6 +111,10 @@ export class PopupController {
             return Store.instance.addBookmark(newBookmark);
         }
         return
+    }
+
+    public openBookmark(bookmarkId: string): void {
+        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_LINK_OPENED);
     }
 
     public deleteBookmark(bookmarkId: string): void {
@@ -223,6 +229,10 @@ export class PopupController {
             let encodedExportData = "text/json;charset=utf-8," + encodeURIComponent(dataToExport);
             link.setAttribute("href", "data:" + encodedExportData);
             link.setAttribute("download", "SmartBookmarks.json");
+            $('#export').off('click').on('click', () => {
+                ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EXPORT);
+            });
+
         }
     }
 
