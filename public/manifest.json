@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Smart Bookmark",
   "description": "Parameterized bookmarks",
-  "version": "1.0.0.2",
+  "version": "1.0.0.3",
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
@@ -27,8 +27,7 @@
   },
   "permissions": [
     "activeTab",
-    "storage",
-    "https://www.google-analytics.com/"
+    "storage"
   ],
   "content_security_policy": "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-eval'; object-src 'self' https://www.googletagmanager.com https://www.google-analytics.com"
 }
