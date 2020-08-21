@@ -6,6 +6,7 @@ Smarks (Smart Bookmarks) is chrome extension built using the TypeScript and Visu
 Every developer opens a bunch of tabs with slight changes to the URL as part of the development or test processes. In these scenarios the regular bookmark will not work. There are cases where I wanted to
 * Open a new tab with the same domain/origin as the current tab with some static URL path
 * Open a new tab by taking few values from the current tab as part of the URL.
+* Copy some value from the current page and open a new tab with the copied value as query parameter.
 
 The above 2 use cases required the bookmarks to support parameters and parameter value to be substituted with context specific runtime values.
 
