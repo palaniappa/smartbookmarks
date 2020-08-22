@@ -31,12 +31,13 @@ export class PopupController {
     public render(): Promise<void> {
         console.log("rendering!")
         let p = this.renderBookmarks();
+        this.renderSyncControls();
         this.renderBookmarkAddControls();
         this.renderParameters();
         this.renderParameterAddControls();
         this.renderImportControls();
         return p.then(() => {
-            ga("send","event",this.CATEGORY_TYPE_SYSTEM,this.EVENT_ACTION_RENDER);
+            ga("send", "event", this.CATEGORY_TYPE_SYSTEM, this.EVENT_ACTION_RENDER);
             console.log("rendering complete!");
         });
     }
@@ -97,12 +98,12 @@ export class PopupController {
             $("#bmName").val('');
             $("#bmUrl").val('');
             this.bookmarkEditId = null;
-            ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_CLEAR_BM);
+            ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_CLEAR_BM);
         });
     }
 
     private addBookmarkItem(id: string, name: string, url: string): Promise<void> {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_ADD_BM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_ADD_BM);
         if (name && url) {
             if (id == null || id == '') {
                 id = Util.getUniqueId(BOOKMARK_ID_PREFIX);
@@ -114,18 +115,18 @@ export class PopupController {
     }
 
     public openBookmark(bookmarkId: string): void {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_LINK_OPENED);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_LINK_OPENED);
     }
 
     public deleteBookmark(bookmarkId: string): void {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_DELETE_BM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_DELETE_BM);
         Store.instance.deleteBookmark(bookmarkId).then(() => {
             this.render();
         });
     }
 
     public editBookmark(bookmarkId: string): void {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EDIT_BM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_EDIT_BM);
         Store.instance.getBookmark(bookmarkId).then((bookmark) => {
             if (bookmark) {
                 this.bookmarkEditId = bookmarkId;
@@ -185,7 +186,7 @@ export class PopupController {
     }
 
     private addParameter(id: string, key: string, value: string): Promise<void> {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_ADD_PM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_ADD_PM);
         if (key && value) {
             if (id == null || id == '') {
                 id = Util.getUniqueId(PARAMETER_ID_PREFIX);
@@ -197,14 +198,14 @@ export class PopupController {
     }
 
     public deleteParameter(parameterId: string): void {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_DELETE_PM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_DELETE_PM);
         Store.instance.deleteParameter(parameterId).then(() => {
             this.render();
         });
     }
 
     public editParameter(parameterId: string): void {
-        ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EDIT_PM);
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_EDIT_PM);
         Store.instance.getParameter(parameterId).then((parameter) => {
             if (parameter) {
                 this.parameterEditId = parameter.id;
@@ -230,7 +231,7 @@ export class PopupController {
             link.setAttribute("href", "data:" + encodedExportData);
             link.setAttribute("download", "SmartBookmarks.json");
             $('#export').off('click').on('click', () => {
-                ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_EXPORT);
+                ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_EXPORT);
             });
 
         }
@@ -242,7 +243,7 @@ export class PopupController {
 
     public onImport(event: any) {
         try {
-            ga("send","event",this.CATEGORY_TYPE_USER,this.EVENT_ACTION_IMPORT);
+            ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_IMPORT);
             let files = event.target.files;
             if (!files.length) {
                 alert('No file selected!');
@@ -275,6 +276,56 @@ export class PopupController {
             Promise.all(promises).then(() => {
                 this.render();
             });
+        }
+    }
+
+    private toggleSpinner(start: boolean) {
+        if(start){
+            $('#syncSpinner').removeClass("loader");
+            $('#syncSpinner').addClass("spinner");
+        }
+        else {
+            $('#syncSpinner').removeClass("spinner");
+            $('#syncSpinner').addClass("loader");
+        }
+    }
+
+    public renderSyncControls(): void {
+        $('#syncButton').off('click').on('click', () => {
+            this.toggleSpinner(true);
+            var manifest = chrome.runtime.getManifest();
+            var clientId = encodeURIComponent(manifest.oauth2.client_id);
+            var scopes = encodeURIComponent(manifest.oauth2.scopes.join(' '));
+            var redirectUri = encodeURIComponent('https://' + chrome.runtime.id + '.chromiumapp.org');
+
+            var url = 'https://accounts.google.com/o/oauth2/auth' +
+                '?client_id=' + clientId +
+                '&response_type=id_token' +
+                '&access_type=offline' +
+                '&redirect_uri=' + redirectUri +
+                '&scope=' + scopes;
+
+            chrome.identity.launchWebAuthFlow(
+                {
+                    'url': url,
+                    'interactive': true
+                },
+                this.onAuthCallback.bind(this));
+        });
+    }
+
+    public onAuthCallback(responseUrl?: string ) {
+        if (chrome.runtime.lastError) {
+            // Example: Authorization page could not be loaded.
+            console.log(chrome.runtime.lastError.message);
+            this.toggleSpinner(false);
+        }
+        else {
+            var response = responseUrl.split('#', 2)[1];
+
+            // Example: id_token=<YOUR_BELOVED_ID_TOKEN>&authuser=0&hd=<SOME.DOMAIN.PL>&session_state=<SESSION_SATE>&prompt=<PROMPT>
+            console.log(response);
+            this.toggleSpinner(false);
         }
     }
 }

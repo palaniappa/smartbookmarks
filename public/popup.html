@@ -11,9 +11,11 @@
 
 <body>
   <div id="mainContainer">
-    <h3>Smarks</h3>
+    <div style="position: relative;">
+        <span style="font-size: 150%;">Smarks</span>
+        <button id="syncButton" class="rightSide">Sync   <div id="syncSpinner" class="loader"></div></button>
+    </div>
     <div id="bookmarkList"></div>
-
     <br />
     <button id="upsertBookmark" class="collapsible">Upsert Bookmark</button>
     <div class="content">
@@ -48,14 +50,14 @@
       </div>
     </div>
   </div>
-    <table>
-      <tr>
-        <td><a id="downloadlink"><button id="export" class="btnExportImport"> &#x2913 Export</button></a></td>
-        <td>
-          <label for="importFile" class="btnExportImport"> &#x2912 Import</label>
-          <input id="importFile" type="file" accept="application/json" style="display:none"/></td>
-      </tr>
-    </table>
+  <table>
+    <tr>
+      <td><a id="downloadlink"><button id="export" class="btnExportImport"> &#x2913 Export</button></a></td>
+      <td>
+        <label for="importFile" class="btnExportImport"> &#x2912 Import</label>
+        <input id="importFile" type="file" accept="application/json" style="display:none" /></td>
+    </tr>
+  </table>
   <script src="js/popup.js"></script>
 </body>
 

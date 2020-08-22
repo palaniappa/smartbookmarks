@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Smart Bookmark",
   "description": "Parameterized bookmarks",
-  "version": "1.0.0.3",
+  "version": "1.1.0.0",
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
@@ -16,9 +16,11 @@
     "*.css",
     "js/*.js"
   ],
-  "icons": { "16": "bookmarkicon.png",
+  "icons": {
+    "16": "bookmarkicon.png",
     "48": "bookmarkicon.png",
-   "128": "bookmarkicon.png" },
+    "128": "bookmarkicon.png"
+  },
   "background": {
     "scripts": [
       "js/vendor.js",
@@ -26,8 +28,14 @@
     ]
   },
   "permissions": [
+    "identity",
     "activeTab",
     "storage"
   ],
-  "content_security_policy": "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-eval'; object-src 'self' https://www.googletagmanager.com https://www.google-analytics.com"
+  "content_security_policy": "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://apis.google.com 'unsafe-eval'; object-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://apis.google.com",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwJWNKQP6HmBMuT6d5ZHmFkPvTTdNYfowagJ7Yca/sOXHABrGaxsXHP1c9qF8VoBV764wgtU5qJMX8zORY1QMmmMAcHeu+9myNGnxYEcxCX40CtOKwbv/j4MIq6dP83QspxeuadrXDbLpwPye2d0j0Wc5+C4ryBZQsUoDO+q9j7yxhU+VrlTcSkDDTQCbp90IueBr8tawMSMdMI3a8lC8ndPUGZmjqme0Ylqid1yyGHLMc3Fg6T8qTEXNS91hkuubvETfHaex2mOQw0RsBZW0sjFt/pg+mfAJqvo0qoBAaYsrYEUls1r0uuKwo/+QdT9p1OXPctsW6lOX+e9rno2HIwIDAQAB",
+  "oauth2": {
+    "client_id": "177630958946-qukmj378oknsokibjrhg0l78fmcijjac.apps.googleusercontent.com",
+    "scopes": ["openid", "email", "profile"]
+  }
 }
