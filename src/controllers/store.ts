@@ -7,27 +7,31 @@ export class Store {
 
     public static instance: Store = new Store();
 
+    public static readonly STATUS_ADDED = "ADDED";
+    public static readonly STATUS_DELETED = "DELETED";
+    public static readonly STATUS_UPDATED = "UPDATED";
+    
     parameters: Parameters = { items: new Map<string, Parameter>() };
     bookmarks: Bookmarks = { items: new Map<string, Bookmark>() };
 
     public DataModelVersion: string = "1.0";
 
     private initializeDefaults(): void {
-        this.parameters.items.set("PM_1", { id: "PM_1", key: "CurrentTabOrigin", value: ParameterUtil.PARAM_TYPE_ACTIVE_TAB + ParameterUtil.PARAM_TYPE_SEPARATOR + "origin" });
-        this.parameters.items.set("PM_2", { id: "PM_2", key: "CurrentTabHost", value: ParameterUtil.PARAM_TYPE_ACTIVE_TAB + ParameterUtil.PARAM_TYPE_SEPARATOR + "host" });
-        this.parameters.items.set("PM_3", { id: "PM_3", key: "SampleJSParam", value: ParameterUtil.PARAM_TYPE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "'news on ' + new Date().toString()" });
-        this.parameters.items.set("PM_4", { id: "PM_4", key: "DayOfWeek", value: ParameterUtil.PARAM_TYPE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "new Date().toString().split(' ')[0] + 'day'" });
-        this.parameters.items.set("PM_5", { id: "PM_5", key: "ActiveTabPageTitle", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "document.querySelector('title') ? document.querySelector('title').innerText : 'no title';" });
-        this.parameters.items.set("PM_6", { id: "PM_6", key: "TenantId", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + 'document.querySelector("body > table > tbody > tr:nth-child(3) > td:nth-child(2)").textContent.trim()' });
-        this.parameters.items.set("PM_7", { id: "PM_7", key: "OrgId", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + 'document.querySelector("body > table > tbody > tr:nth-child(2) > td:nth-child(2)").textContent.trim()' });
+        this.parameters.items.set("PM_1", { id: "PM_1", status: Store.STATUS_ADDED, key: "CurrentTabOrigin", value: ParameterUtil.PARAM_TYPE_ACTIVE_TAB + ParameterUtil.PARAM_TYPE_SEPARATOR + "origin" });
+        this.parameters.items.set("PM_2", { id: "PM_2", status: Store.STATUS_ADDED, key: "CurrentTabHost", value: ParameterUtil.PARAM_TYPE_ACTIVE_TAB + ParameterUtil.PARAM_TYPE_SEPARATOR + "host" });
+        this.parameters.items.set("PM_3", { id: "PM_3", status: Store.STATUS_ADDED, key: "SampleJSParam", value: ParameterUtil.PARAM_TYPE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "'news on ' + new Date().toString()" });
+        this.parameters.items.set("PM_4", { id: "PM_4", status: Store.STATUS_ADDED, key: "DayOfWeek", value: ParameterUtil.PARAM_TYPE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "new Date().toString().split(' ')[0] + 'day'" });
+        this.parameters.items.set("PM_5", { id: "PM_5", status: Store.STATUS_ADDED, key: "ActiveTabPageTitle", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + "document.querySelector('title') ? document.querySelector('title').innerText : 'no title';" });
+        this.parameters.items.set("PM_6", { id: "PM_6", status: Store.STATUS_ADDED, key: "TenantId", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + 'document.querySelector("body > table > tbody > tr:nth-child(3) > td:nth-child(2)").textContent.trim()' });
+        this.parameters.items.set("PM_7", { id: "PM_7", status: Store.STATUS_ADDED, key: "OrgId", value: ParameterUtil.PARAM_TYPE_ACTIVE_TABE_JS_VALUE + ParameterUtil.PARAM_TYPE_SEPARATOR + 'document.querySelector("body > table > tbody > tr:nth-child(2) > td:nth-child(2)").textContent.trim()' });
 
-        this.bookmarks.items.set("BM_1", { id: "BM_1", name: "TenantInfo", url: "{{CurrentTabOrigin}}/qa/cdp/cdp.jsp" });
-        this.bookmarks.items.set("BM_2", { id: "BM_2", name: "Generate JWT", url: "{{CurrentTabOrigin}}/qa/cdp/generatejwt.jsp" });
-        this.bookmarks.items.set("BM_3", { id: "BM_3", name: "Mint JWT", url: "{{CurrentTabOrigin}}/qa/cdp/mintedjwt.jsp?issuerId={{OrgId}}&audienceId={{TenantId}}&type=JWT" });
-        this.bookmarks.items.set("BM_4", { id: "BM_4", name: "News Today", url: "https://www.google.com/search?q={{SampleJSParam}}" });
-        this.bookmarks.items.set("BM_5", { id: "BM_5", name: "Google Current Host", url: "https://www.google.com/search?q={{CurrentTabHost}}" });
-        this.bookmarks.items.set("BM_6", { id: "BM_6", name: "Joke on Day", url: "https://www.google.com/search?q=Tell me a joke about {{DayOfWeek}}" });
-        this.bookmarks.items.set("BM_7", { id: "BM_7", name: "Google Current Page Title", url: "https://www.google.com/search?q={{ActiveTabPageTitle}}" });
+        this.bookmarks.items.set("BM_1", { id: "BM_1", status: Store.STATUS_ADDED, name: "TenantInfo", url: "{{CurrentTabOrigin}}/qa/cdp/cdp.jsp" });
+        this.bookmarks.items.set("BM_2", { id: "BM_2", status: Store.STATUS_ADDED, name: "Generate JWT", url: "{{CurrentTabOrigin}}/qa/cdp/generatejwt.jsp" });
+        this.bookmarks.items.set("BM_3", { id: "BM_3", status: Store.STATUS_ADDED, name: "Mint JWT", url: "{{CurrentTabOrigin}}/qa/cdp/mintedjwt.jsp?issuerId={{OrgId}}&audienceId={{TenantId}}&type=JWT" });
+        this.bookmarks.items.set("BM_4", { id: "BM_4", status: Store.STATUS_ADDED, name: "News Today", url: "https://www.google.com/search?q={{SampleJSParam}}" });
+        this.bookmarks.items.set("BM_5", { id: "BM_5", status: Store.STATUS_ADDED, name: "Google Current Host", url: "https://www.google.com/search?q={{CurrentTabHost}}" });
+        this.bookmarks.items.set("BM_6", { id: "BM_6", status: Store.STATUS_ADDED, name: "Joke on Day", url: "https://www.google.com/search?q=Tell me a joke about {{DayOfWeek}}" });
+        this.bookmarks.items.set("BM_7", { id: "BM_7", status: Store.STATUS_ADDED, name: "Google Current Page Title", url: "https://www.google.com/search?q={{ActiveTabPageTitle}}" });
     }
 
     public initialize(): Promise<void> {
@@ -38,7 +42,6 @@ export class Store {
                 let p2 = this.saveBookmarks(this.bookmarks);
                 return Promise.all([p1, p2]).then();
             }
-
         });
     }
 
@@ -105,6 +108,7 @@ export class Store {
         if (newBookmarks && newBookmarks.length > 0) {
             return this.getBookmarks().then(bookmarks => {
                 newBookmarks.forEach(nb => {
+                    nb.status = Store.STATUS_ADDED;
                     bookmarks.items.set(nb.id, nb);
                 });
                 return this.saveBookmarks(bookmarks);
@@ -127,10 +131,18 @@ export class Store {
         });
     }
 
+    public softDeleteBookmark(bookmarkToDelete: string): Promise<void> {
+        return this.getBookmarks().then(bookmarks => {
+            bookmarks.items.get(bookmarkToDelete).status = Store.STATUS_DELETED;
+            return this.saveBookmarks(bookmarks);
+        });
+    }
+
     public addParameters(newParameters: Array<Parameter>): Promise<void> {
         if (newParameters && newParameters.length > 0) {
             return this.getParameters().then(parameters => {
                 newParameters.forEach(np => {
+                    np.status = Store.STATUS_ADDED;
                     parameters.items.set(np.id, np);
                 });
                 return this.saveParameters(parameters);
@@ -150,6 +162,13 @@ export class Store {
     public deleteParameter(paremterIdToDelete: string): Promise<void> {
         return this.getParameters().then(parameters => {
             parameters.items.delete(paremterIdToDelete);
+            return this.saveParameters(parameters);
+        });
+    }
+
+    public softDeleteParameter(paremterIdToDelete: string): Promise<void> {
+        return this.getParameters().then(parameters => {
+            parameters.items.get(paremterIdToDelete).status = Store.STATUS_DELETED;
             return this.saveParameters(parameters);
         });
     }

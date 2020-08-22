@@ -69,16 +69,16 @@ export class PopupController {
                 bmList.className = "bmUList";
                 return ParameterUtil.getAllParameterValues(parameters, currentTab).then((parameterValues) => {
                     bookmarks.items.forEach(bookmark => {
-                        let url = bookmark.url;
-                        let resolvedUrl = ParameterUtil.getResolvedUrl(url, parameters, parameterValues);
-                        let bmUi = HtmlUtil.getBookmarkDisplay(bookmark, resolvedUrl, this.openBookmark.bind(this), this.deleteBookmark.bind(this), this.editBookmark.bind(this));
-                        bmList.appendChild(bmUi);
+                        if(bookmark.status != Store.STATUS_DELETED){
+                            let url = bookmark.url;
+                            let resolvedUrl = ParameterUtil.getResolvedUrl(url, parameters, parameterValues);
+                            let bmUi = HtmlUtil.getBookmarkDisplay(bookmark, resolvedUrl, this.openBookmark.bind(this), this.deleteBookmark.bind(this), this.editBookmark.bind(this));
+                            bmList.appendChild(bmUi);
+                        }
                     });
                     bookmarkListContainer.innerHTML = '';
                     bookmarkListContainer.appendChild(bmList);
                 });
-
-
             }
         });
     }
@@ -105,10 +105,14 @@ export class PopupController {
     private addBookmarkItem(id: string, name: string, url: string): Promise<void> {
         ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_ADD_BM);
         if (name && url) {
+            let status = null;
             if (id == null || id == '') {
                 id = Util.getUniqueId(BOOKMARK_ID_PREFIX);
+                status = Store.STATUS_ADDED;
+            } else {
+                status = status = Store.STATUS_UPDATED;
             }
-            let newBookmark: Bookmark = { id: id, name: name, url: url };
+            let newBookmark: Bookmark = { id: id, name: name, url: url, status: status };
             return Store.instance.addBookmark(newBookmark);
         }
         return
@@ -120,7 +124,7 @@ export class PopupController {
 
     public deleteBookmark(bookmarkId: string): void {
         ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_DELETE_BM);
-        Store.instance.deleteBookmark(bookmarkId).then(() => {
+        Store.instance.softDeleteBookmark(bookmarkId).then(() => {
             this.render();
         });
     }
@@ -149,10 +153,12 @@ export class PopupController {
                 let ids: Array<string> = [];
                 parametersObject.items.forEach(p => {
                     if (p) {
-                        let closeButton = HtmlUtil.getCloseButton(p.id, this.deleteParameter.bind(this));
-                        let paramItem = [p.key, p.value, closeButton];
-                        ids.push(p.id);
-                        items.push(paramItem);
+                        if(p.status != Store.STATUS_DELETED) {
+                            let closeButton = HtmlUtil.getCloseButton(p.id, this.deleteParameter.bind(this));
+                            let paramItem = [p.key, p.value, closeButton];
+                            ids.push(p.id);
+                            items.push(paramItem);
+                        }
                     }
                 });
                 let hearders: Array<string> = [];
@@ -188,10 +194,14 @@ export class PopupController {
     private addParameter(id: string, key: string, value: string): Promise<void> {
         ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_ADD_PM);
         if (key && value) {
+            let status = null;
             if (id == null || id == '') {
                 id = Util.getUniqueId(PARAMETER_ID_PREFIX);
+                status = Store.STATUS_ADDED;
+            } else {
+                status = Store.STATUS_UPDATED;
             }
-            let newParameter: Parameter = { id: id, key: key, value: value };
+            let newParameter: Parameter = { id: id, key: key, value: value, status: status };
             return Store.instance.addParameter(newParameter);
         }
         return
@@ -199,7 +209,7 @@ export class PopupController {
 
     public deleteParameter(parameterId: string): void {
         ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_DELETE_PM);
-        Store.instance.deleteParameter(parameterId).then(() => {
+        Store.instance.softDeleteParameter(parameterId).then(() => {
             this.render();
         });
     }
@@ -283,10 +293,12 @@ export class PopupController {
         if(start){
             $('#syncSpinner').removeClass("loader");
             $('#syncSpinner').addClass("spinner");
+            $('#syncButton').prop('disabled', true);
         }
         else {
             $('#syncSpinner').removeClass("spinner");
             $('#syncSpinner').addClass("loader");
+            $('#syncButton').prop('disabled', false);
         }
     }
 

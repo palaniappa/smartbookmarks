@@ -4,6 +4,7 @@ interface Parameter {
     id: string;
     key: string;
     value: string;
+    status?: string;
 }
 
 interface Parameters {
