@@ -11,6 +11,11 @@ import { ready } from "jquery";
 import { ServerRespose } from "../model/serverresponse";
 export class PopupController {
 
+
+    //public static readonly SERVER_URL = "http://localhost:3000/";
+    public static readonly SERVER_URL = "http://ec2-34-227-101-34.compute-1.amazonaws.com:3000/";
+
+
     public CATEGORY_TYPE_USER = "user";
     public CATEGORY_TYPE_SYSTEM = "system";
     public EVENT_ACTION_RENDER = "render";
@@ -25,6 +30,7 @@ export class PopupController {
     public EVENT_ACTION_IMPORT = "import";
     public EVENT_ACTION_EXPORT = "export";
     public EVENT_ACTION_LINK_OPENED = "linkopened";
+    public EVENT_ACTION_SYNC = "sync";
 
     public static instance: PopupController = new PopupController();
     public bookmarkEditId: string = null;
@@ -312,6 +318,7 @@ export class PopupController {
     }
 
     private onSyncClick() {
+        ga("send", "event", this.CATEGORY_TYPE_USER, this.EVENT_ACTION_SYNC);
         this.toggleSpinner(true);
 
         this.doAuth().then((token) => {
@@ -368,7 +375,7 @@ export class PopupController {
     }
 
     private syncBookmarks(token: String): Promise<void> {
-        const SERVER_URL = "http://localhost:3000/";
+        
 
         let bmPromise = Store.instance.getBookmarks();
         let parametersPromise = Store.instance.getParameters();
@@ -385,7 +392,7 @@ export class PopupController {
 
             return $.ajax({
                 headers : hearders,
-                url : SERVER_URL + 'userbookmarks',
+                url :  PopupController.SERVER_URL + 'userbookmarks',
                 type : 'PATCH',
                 data : JSON.stringify(datamodel)
             }).then ( (result: ServerRespose) => {
