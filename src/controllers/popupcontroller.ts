@@ -7,6 +7,8 @@ import { Util } from "../utils/util";
 import { DataModel } from "../model/datamodel";
 
 import * as $ from 'jquery';
+import { ready } from "jquery";
+import { ServerRespose } from "../model/serverresponse";
 export class PopupController {
 
     public CATEGORY_TYPE_USER = "user";
@@ -62,7 +64,7 @@ export class PopupController {
             let bookmarks: Bookmarks = result[0];
             let parameters: Parameters = result[1];
             let currentTab: chrome.tabs.Tab = result[2];
-            this.renderExportLink(bookmarks, parameters);
+            this.renderExportLink(this.getDataModel(bookmarks, parameters));
             let bookmarkListContainer = document.getElementById("bookmarkList");
             if (bookmarkListContainer) {
                 let bmList = document.createElement("ul");
@@ -225,17 +227,20 @@ export class PopupController {
         });
     }
 
-    public renderExportLink(bookmarks: Bookmarks, parameters: Parameters) {
-        let link = document.getElementById("downloadlink");
-        if (link) {
-            let datamodel: DataModel = { version: Store.instance.DataModelVersion, bookmarks: [], parameters: [] };
+    private getDataModel(bookmarks: Bookmarks, parameters: Parameters): DataModel {
+        let datamodel: DataModel = { version: Store.instance.DataModelVersion, bookmarks: [], parameters: [] };
             bookmarks.items.forEach(b => {
                 datamodel.bookmarks.push(b);
             });
             parameters.items.forEach(p => {
                 datamodel.parameters.push(p);
             });
+        return datamodel;
+    }
 
+    public renderExportLink(datamodel: DataModel) {
+        let link = document.getElementById("downloadlink");
+        if (link) {
             let dataToExport = JSON.stringify(datamodel);
             let encodedExportData = "text/json;charset=utf-8," + encodeURIComponent(dataToExport);
             link.setAttribute("href", "data:" + encodedExportData);
@@ -303,41 +308,91 @@ export class PopupController {
     }
 
     public renderSyncControls(): void {
-        $('#syncButton').off('click').on('click', () => {
-            this.toggleSpinner(true);
-            var manifest = chrome.runtime.getManifest();
-            var clientId = encodeURIComponent(manifest.oauth2.client_id);
-            var scopes = encodeURIComponent(manifest.oauth2.scopes.join(' '));
-            var redirectUri = encodeURIComponent('https://' + chrome.runtime.id + '.chromiumapp.org');
+        $('#syncButton').off('click').on('click', this.onSyncClick.bind(this));
+    }
 
-            var url = 'https://accounts.google.com/o/oauth2/auth' +
-                '?client_id=' + clientId +
-                '&response_type=id_token' +
-                '&access_type=offline' +
-                '&redirect_uri=' + redirectUri +
-                '&scope=' + scopes;
+    private onSyncClick() {
+        this.toggleSpinner(true);
 
+        this.doAuth().then((token) => {
+            return this.syncBookmarks(token).then(() => {
+                this.toggleSpinner(false);
+                this.render();
+            });
+        })
+        .catch((reason) => {
+            this.toggleSpinner(false);
+            console.log(reason);
+        });
+    }
+
+    private doAuth(): Promise<string> {
+        var manifest = chrome.runtime.getManifest();
+        var clientId = encodeURIComponent(manifest.oauth2.client_id);
+        var scopes = encodeURIComponent(manifest.oauth2.scopes.join(' '));
+        var redirectUri = encodeURIComponent('https://' + chrome.runtime.id + '.chromiumapp.org');
+
+        var url = 'https://accounts.google.com/o/oauth2/auth' +
+            '?client_id=' + clientId +
+            '&response_type=id_token' +
+            '&access_type=offline' +
+            '&redirect_uri=' + redirectUri +
+            '&scope=' + scopes;
+
+        return new Promise<string>((resolve, reject) => {
             chrome.identity.launchWebAuthFlow(
                 {
                     'url': url,
                     'interactive': true
                 },
-                this.onAuthCallback.bind(this));
+                (responseUrl?: string) => {
+                    if (chrome.runtime.lastError) {
+                        // Example: Authorization page could not be loaded.
+                        console.log(chrome.runtime.lastError.message);
+                        reject(chrome.runtime.lastError.message);
+                    }
+                    else {
+                        let token = this.parseToken(responseUrl);
+                        resolve(token);
+                    }
+                });
         });
     }
 
-    public onAuthCallback(responseUrl?: string ) {
-        if (chrome.runtime.lastError) {
-            // Example: Authorization page could not be loaded.
-            console.log(chrome.runtime.lastError.message);
-            this.toggleSpinner(false);
-        }
-        else {
-            var response = responseUrl.split('#', 2)[1];
+    private parseToken(responseUrl?: string): string {
+        // Example: id_token=<YOUR_BELOVED_ID_TOKEN>&authuser=0&hd=<SOME.DOMAIN.PL>&session_state=<SESSION_SATE>&prompt=<PROMPT>
+        var response = responseUrl.split('#', 2)[1];
+        var tokenItems = response.split('&');
+        var token = tokenItems[0].replace('id_token=', 'Bearer ');
+        return token;
+    }
 
-            // Example: id_token=<YOUR_BELOVED_ID_TOKEN>&authuser=0&hd=<SOME.DOMAIN.PL>&session_state=<SESSION_SATE>&prompt=<PROMPT>
-            console.log(response);
-            this.toggleSpinner(false);
-        }
+    private syncBookmarks(token: String): Promise<void> {
+        const SERVER_URL = "http://localhost:3000/";
+
+        let bmPromise = Store.instance.getBookmarks();
+        let parametersPromise = Store.instance.getParameters();
+        return Promise.all([bmPromise, parametersPromise]).then((result: any) => {
+            let bookmarks: Bookmarks = result[0];
+            let parameters: Parameters = result[1];
+            let datamodel = this.getDataModel(bookmarks, parameters);
+
+            let hearders = {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            };
+            hearders['Authorization'] = token;
+
+            return $.ajax({
+                headers : hearders,
+                url : SERVER_URL + 'userbookmarks',
+                type : 'PATCH',
+                data : JSON.stringify(datamodel)
+            }).then ( (result: ServerRespose) => {
+                let resultDatamodel = result.data;
+                console.log(result.data);
+                return Store.instance.overwriteBookmarks(resultDatamodel);
+            })
+        });
     }
 }
