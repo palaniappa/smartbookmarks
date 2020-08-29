@@ -1,5 +1,6 @@
 import { Parameters } from "../model/parameter";
 import { ParameterValues } from "../model/parameterValues"
+import { Store } from "../controllers/store";
 
 export class ParameterUtil {
 
@@ -27,10 +28,12 @@ export class ParameterUtil {
         let promises = [];
         if (parameters) {
             parameters.items.forEach(param => {
-                let p = this.getRuntimeParamValue(param.value, currentTab).then((value) => {
-                    return paramValues.items.set(param.key, value);
-                });
-                promises.push(p);
+                if(param.status != Store.STATUS_DELETED){
+                    let p = this.getRuntimeParamValue(param.value, currentTab).then((value) => {
+                        return paramValues.items.set(param.key, value);
+                    });
+                    promises.push(p);
+                }
             });
         }
         return Promise.all<ParameterValues>(promises).then((result) => {

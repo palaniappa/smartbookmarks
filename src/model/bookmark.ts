@@ -2,6 +2,7 @@ interface Bookmark {
     id: string;
     name: string;
     url: string;
+    status?: string;
 }
 interface Bookmarks {
     items: Map<string,Bookmark>;
