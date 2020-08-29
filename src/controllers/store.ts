@@ -204,8 +204,11 @@ export class Store {
     }
 
     private static deserializeParameters(items: string): Parameters {
-        let pmlist = JSON.parse(items).reduce((m, [key, val]) => m.set(key, val), new Map());
-        let pms = { items: pmlist };
+        let pms = { items: new Map<string,Parameter>() };
+        if(items){
+            let pmlist = JSON.parse(items).reduce((m, [key, val]) => m.set(key, val), new Map());
+            pms.items = pmlist;
+        }
         return pms;
     }
 

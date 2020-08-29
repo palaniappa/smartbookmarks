@@ -13,7 +13,7 @@ export class PopupController {
 
 
     //public static readonly SERVER_URL = "http://localhost:3000/";
-    public static readonly SERVER_URL = "http://ec2-34-227-101-34.compute-1.amazonaws.com:3000/";
+    public static readonly SERVER_URL = "http://ec2-34-227-101-34.compute-1.amazonaws.com/";
 
 
     public CATEGORY_TYPE_USER = "user";
@@ -324,12 +324,15 @@ export class PopupController {
         this.doAuth().then((token) => {
             return this.syncBookmarks(token).then(() => {
                 this.toggleSpinner(false);
-                this.render();
+                this.render().then( () => {
+                    this.showNotification("Sync complete!");
+                });
             });
         })
         .catch((reason) => {
             this.toggleSpinner(false);
             console.log(reason);
+            this.showNotification("Failed to sync, see console for errors.");
         });
     }
 
@@ -374,7 +377,7 @@ export class PopupController {
         return token;
     }
 
-    private syncBookmarks(token: String): Promise<void> {
+    private syncBookmarks(token: string): Promise<void> {
         
 
         let bmPromise = Store.instance.getBookmarks();
@@ -401,5 +404,12 @@ export class PopupController {
                 return Store.instance.overwriteBookmarks(resultDatamodel);
             })
         });
+    }
+
+    private showNotification(message: string) {
+        var x = document.getElementById("snackbar");
+        x.innerText = message;
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
     }
 }
