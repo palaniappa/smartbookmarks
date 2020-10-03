@@ -13,7 +13,8 @@ export class PopupController {
 
 
     //public static readonly SERVER_URL = "http://localhost:3000/";
-    public static readonly SERVER_URL = "http://ec2-34-227-101-34.compute-1.amazonaws.com/";
+    //public static readonly SERVER_URL = "http://ec2-34-227-101-34.compute-1.amazonaws.com/";  
+    public static readonly SERVER_URL = "https://smarksapi.azurewebsites.net/";
 
 
     public CATEGORY_TYPE_USER = "user";
